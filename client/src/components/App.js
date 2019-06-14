@@ -1,10 +1,29 @@
 import React from 'react';
 import './App.css';
-import Table from './Table';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
+import Login from './Login';
+import Dashboard from './Dashboard';
 
 function App() {
   return (
-    <Table />
+    <BrowserRouter>
+      <div>
+        <main>
+          <article>
+            <nav>
+              <Link to='/login'>Login</Link>
+              <br />
+              <Link to='/register'>Register</Link>
+              <br />
+              <Link to='/dashboard'>Dashboard</Link>
+              <br />
+            </nav>
+            <Route exact path='/login' component={Login} />
+            <Route exact path='/dashboard' component={Dashboard} />
+          </article>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
 
