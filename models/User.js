@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-
+const jwt = require('jsonwebtoken');
+const config = require('../config/config');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -15,9 +16,21 @@ const userSchema = new Schema({
     type: String,
     require: true,
     minlength: 6
-  }
+  },
+  tokens: [{ token: { type: String, required: true } }]
 });
 
+//instance method that we call on a specifc instance of user, not the User model
+userSchema.methods.generateAuthToken = async function() {
+  const user = this;
+  const token = jwt.sign({ _id: user._id.toString() }, config.jwt.signature);
+
+  user.tokens = user.tokens.concat({ token });
+  await user.save();
+  return token;
+};
+
+//This is a model method, so you can call it with User.findByCredentials; as opposed to an instance method
 userSchema.statics.findByCredentials = async function(email, password) {
   const User = this;
 

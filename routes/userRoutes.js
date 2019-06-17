@@ -3,20 +3,26 @@ const User = mongoose.model('users');
 const _ = require('lodash');
 
 module.exports = app => {
-  app.post('/user', (req, res) => {
-    console.log('/user post: ', req.body);
+  app.post('/user', async (req, res) => {
     const body = _.pick(req.body, ['email', 'password']);
     var user = new User(body);
 
-    user
-      .save()
-      .then(user => {
-        console.log('user created ', user);
-        res.send('/user post working');
-      })
-      .catch(err => {
-        res.status(400).send(err);
-      });
+    try {
+      await user.save();
+      const token = await user.generateAuthToken();
+      res.status(201).send({ user, token });
+    } catch (e) {
+      res.status(400).send(e);
+    }
+    // user
+    //   .save()
+    //   .then(user => {
+    //     console.log('user created ', user);
+    //     res.send('/user post working');
+    //   })
+    //   .catch(err => {
+    //     res.status(400).send(err);
+    //   });
   });
 
   app.post('/user/login', async (req, res) => {
@@ -26,7 +32,9 @@ module.exports = app => {
         req.body.password
       );
 
-      res.send(user);
+      const token = await user.generateAuthToken();
+
+      res.send({ user, token });
     } catch (e) {
       res.status(400).send();
     }
