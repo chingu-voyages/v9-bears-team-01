@@ -7,7 +7,11 @@ const config = require('./config/config');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+//'require' will just run the file, in this case it loads the models
 require('./models/User');
+require('./models/Stock');
+//alternate way if User had module.exports:
+// const User = require('./models/User')
 
 app.listen(PORT, () => {
   console.log(`Express running on port ${PORT}`);
@@ -15,15 +19,27 @@ app.listen(PORT, () => {
 
 app.use(bodyParser.json());
 
-mongoose.connect(config.mongodb.dbURI, { useNewUrlParser: true });
+//alternate way to parse request body
+// app.user(express.json())
 
-require('./routes/userRoutes')(app);
-
-app.get('/api/test', (req, res) => {
-  res.send('it works!');
+mongoose.connect(config.mongodb.dbURI, {
+  useNewUrlParser: true,
+  useCreateIndex: true
 });
 
-app.get('/buy/:ticker/:quantity/:date/', (req, res) => {
+require('./routes/userRoutes')(app);
+require('./routes/stockRoutes')(app);
+
+//alternate way
+// 1. use Express router
+// const router = new express.Router()
+// router.get('/test', (req,res)...)
+// module.exports = router
+// 2. register router w/ app
+// const userRouter = require('./userRoutes')
+// app.use(userRouter)
+
+app.get('/api/test', (req, res) => {
   res.send('it works!');
 });
 

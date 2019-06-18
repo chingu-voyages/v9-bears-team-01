@@ -2,20 +2,41 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
+const validator = require('validator');
+
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
+  firstName: {
+    type: String,
+    trim: true
+  },
+  lastName: {
+    type: String,
+    trim: true
+  },
   email: {
     type: String,
     required: true,
     minlength: 1,
     trim: true,
-    unique: true
+    unique: true,
+    validate(value) {
+      if (!validator.isEmail(value)) {
+        throw new Error('Email is not valid.');
+      }
+    }
   },
   password: {
     type: String,
     require: true,
-    minlength: 6
+    minlength: 6,
+    trim: true
+    // validate(value) {
+    //   if (value.includes('password')) {
+    //     throw new Error('Password cannot contain "password"');
+    //   }
+    // }
   },
   tokens: [{ token: { type: String, required: true } }]
 });
