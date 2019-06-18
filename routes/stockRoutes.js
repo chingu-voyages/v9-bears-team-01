@@ -1,8 +1,10 @@
+const express = require('express');
 const mongoose = require('mongoose');
 const Stock = mongoose.model('stocks');
 
 module.exports = app => {
-  app.post('/stocks', async (req, res) => {
+  const router = express.Router();
+  router.post('/stocks', async (req, res) => {
     const stock = new Stock(req.body);
 
     try {
@@ -13,7 +15,7 @@ module.exports = app => {
     }
   });
 
-  app.get('/stocks', async (req, res) => {
+  router.get('/stocks', async (req, res) => {
     try {
       const stocks = await Stock.find({});
       res.send(stocks);
@@ -22,7 +24,7 @@ module.exports = app => {
     }
   });
 
-  app.get('/stocks/:id', async (req, res) => {
+  router.get('/stocks/:id', async (req, res) => {
     const id = req.params.id;
     try {
       const stock = await Stock.findById(id);
@@ -36,7 +38,7 @@ module.exports = app => {
     }
   });
 
-  app.patch('/stocks/:id', async (req, res) => {
+  router.patch('/stocks/:id', async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ['ticker', 'quantity', 'price', 'date'];
 
@@ -63,7 +65,7 @@ module.exports = app => {
     }
   });
 
-  app.delete('/stocks/:id', async (req, res) => {
+  router.delete('/stocks/:id', async (req, res) => {
     try {
       const stock = await Stock.findByIdAndDelete(req.params.id);
       if (!stock) {
@@ -74,4 +76,6 @@ module.exports = app => {
       res.status(500).send();
     }
   });
+
+  app.use('/api', router);
 };

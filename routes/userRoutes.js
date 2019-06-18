@@ -1,3 +1,4 @@
+const express = require('express');
 const mongoose = require('mongoose');
 const User = mongoose.model('users');
 //alternate
@@ -5,7 +6,8 @@ const User = mongoose.model('users');
 const _ = require('lodash');
 
 module.exports = app => {
-  app.post('/users', async (req, res) => {
+  const router = express.Router();
+  router.post('/users', async (req, res) => {
     // const body = _.pick(req.body, ['email', 'password']);
     var user = new User(req.body);
 
@@ -27,7 +29,7 @@ module.exports = app => {
     //   });
   });
 
-  app.get('/users', async (req, res) => {
+  router.get('/users', async (req, res) => {
     try {
       const users = await User.find({});
       res.send(users);
@@ -36,7 +38,7 @@ module.exports = app => {
     }
   });
 
-  app.get('/users/:id', async (req, res) => {
+  router.get('/users/:id', async (req, res) => {
     const id = req.params.id;
     try {
       const user = await User.findById(id);
@@ -50,7 +52,7 @@ module.exports = app => {
     }
   });
 
-  app.post('/users/login', async (req, res) => {
+  router.post('/users/login', async (req, res) => {
     try {
       const user = await User.findByCredentials(
         req.body.email,
@@ -65,7 +67,7 @@ module.exports = app => {
     }
   });
 
-  app.patch('/users/:id', async (req, res) => {
+  router.patch('/users/:id', async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ['firstName', 'lastName', 'password'];
 
@@ -92,7 +94,7 @@ module.exports = app => {
     }
   });
 
-  app.delete('/users/:id', async (req, res) => {
+  router.delete('/users/:id', async (req, res) => {
     try {
       const user = await User.findByIdAndDelete(req.params.id);
       if (!user) {
@@ -103,4 +105,6 @@ module.exports = app => {
       res.status(500).send();
     }
   });
+
+  app.use('/api', router);
 };
