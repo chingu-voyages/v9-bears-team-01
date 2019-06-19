@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 const validator = require('validator');
 
+require('./Stock');
+const Stock = mongoose.model('stocks');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -41,6 +43,12 @@ const userSchema = new Schema({
   tokens: [{ token: { type: String, required: true } }]
 });
 
+userSchema.virtual('stocks', {
+  ref: 'stocks',
+  localField: '_id',
+  foreignField: 'user'
+});
+
 //instance method that we call on a specifc instance of user, not the User model
 userSchema.methods.generateAuthToken = async function() {
   const user = this;
@@ -51,6 +59,15 @@ userSchema.methods.generateAuthToken = async function() {
   return token;
 };
 
+userSchema.methods.toJSON = function() {
+  const user = this;
+  const userObject = user.toObject();
+
+  delete userObject.password;
+  delete userObject.tokens;
+
+  return userObject;
+};
 //This is a model method, so you can call it with User.findByCredentials; as opposed to an instance method
 userSchema.statics.findByCredentials = async function(email, password) {
   const User = this;
@@ -69,7 +86,7 @@ userSchema.statics.findByCredentials = async function(email, password) {
   return user;
 };
 
-// Has plain text password before saving
+// middleware to hash plain text password before saving
 userSchema.pre('save', async function(next) {
   const user = this;
   if (user.isModified('password')) {
@@ -78,5 +95,13 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
+// middleware to delete user's stocks when user is removed
+userSchema.pre('remove', async function(next) {
+  const user = this;
+  await Stock.deleteMany({ user: user._id });
+  next();
+});
+
 //this creates a model class
+//NOTE: it doesn't matter if you do 'users' or 'User', but keep it consistent!
 mongoose.model('users', userSchema);

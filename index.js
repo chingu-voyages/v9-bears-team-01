@@ -27,8 +27,8 @@ mongoose.connect(config.mongodb.dbURI, {
   useCreateIndex: true
 });
 
-require('./routes/userRoutes')(app);
 require('./routes/stockRoutes')(app);
+require('./routes/userRoutes')(app);
 
 //alternate way
 // 1. use Express router
@@ -42,6 +42,33 @@ require('./routes/stockRoutes')(app);
 app.get('/api/test', (req, res) => {
   res.send('it works!');
 });
+
+// GOOD
+// const Stock = mongoose.model('stocks');
+// Stock.findById('5d09bb9703fd0c16e0c48b9b').then(stock => {
+//   // console.log({ stock });
+//   stock.populate('user').execPopulate(result => {
+//     console.log('stock w/ user:', stock);
+//   });
+// });
+
+//GOOD
+// const User = mongoose.model('users');
+// User.findById('5d09b8428d71852c64950a0c').then(result => {
+//   result
+//     .populate('stocks')
+//     .execPopulate(users => console.log('user w/ stocks', result.stocks));
+// });
+
+//NOT WORKING
+// const test = async () => {
+//   const User = mongoose.model('users');
+//   const user = User.findById('5d09b8428d71852c64950a0c');
+//   await user.populate('stocks').execPopulate();
+//   console.log('user w/ stocks:', user.stocks);
+// };
+
+// test();
 
 // finally, if you get here, you want a file or route from the React static build
 app.use('*', (req, res) => {
