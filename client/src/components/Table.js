@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
+import Table from 'react-bootstrap/Table';
 
-class Table extends Component {
+class DisplayTable extends Component {
 	render() {
 		const headings = [
 			'Ticker',
@@ -24,7 +25,11 @@ class Table extends Component {
 		);
 
 		return (
-			<table>
+			<Table
+				striped
+				bordered
+				hover
+				>
 				{ theadMarkup }
 				<tr>
 					<td>
@@ -52,9 +57,9 @@ class Table extends Component {
 						$143.77
 					</td>
 				</tr>
-			</table>
+			</Table>
 		)
 	}
 }
 
-export default Table
+export default DisplayTable
