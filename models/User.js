@@ -6,9 +6,8 @@ const validator = require('validator');
 
 require('./Stock');
 const Stock = mongoose.model('stocks');
-const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
     trim: true

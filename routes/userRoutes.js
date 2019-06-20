@@ -6,6 +6,7 @@ const User = mongoose.model('users');
 const _ = require('lodash');
 
 const auth = require('../middleware/auth');
+const { sendWelcomeEmail, sendCancelEmail } = require('../services/sendGrid');
 
 module.exports = app => {
   const router = express.Router();
@@ -15,6 +16,7 @@ module.exports = app => {
 
     try {
       await user.save();
+      sendWelcomeEmail(user.email, user.firstName);
       const token = await user.generateAuthToken();
       res.status(201).send({ user, token });
     } catch (e) {
@@ -122,6 +124,7 @@ module.exports = app => {
       //   return res.status(404).send();
       // }
       await req.user.remove();
+      sendCancelEmail(req.user.email, req.user.firstName);
       res.send(req.user);
     } catch (e) {
       res.status(500).send();

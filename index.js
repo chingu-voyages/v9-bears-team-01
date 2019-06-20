@@ -24,7 +24,8 @@ app.use(bodyParser.json());
 
 mongoose.connect(config.mongodb.dbURI, {
   useNewUrlParser: true,
-  useCreateIndex: true
+  useCreateIndex: true,
+  useFindAndModify: false
 });
 
 require('./routes/stockRoutes')(app);
