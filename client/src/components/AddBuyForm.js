@@ -17,7 +17,7 @@ class AddBuyForm extends Component {
 
 	// 	}
 	// 	this.setState({ validated: true });
-	// }
+	/// }
 
   render() {
 		return (
