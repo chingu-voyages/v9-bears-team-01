@@ -3,8 +3,9 @@ import './App.css';
 import { BrowserRouter, Route, Link } from 'react-router-dom';
 import Login from './Login';
 import Dashboard from './Dashboard';
-import { Nav, Navbar } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
+import { Nav, Navbar } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import Register from './Register';
 
 function App() {
   return (
@@ -12,10 +13,10 @@ function App() {
       <div>
         <main>
           <article>
-            <Navbar bg="primary" variant="dark">
-              <Navbar.Brand href="">Brand</Navbar.Brand>
+            <Navbar bg='primary' variant='dark'>
+              <Navbar.Brand href=''>Brand</Navbar.Brand>
               <Navbar.Collapse>
-                <Nav className="ml-auto">
+                <Nav className='ml-auto'>
                   <LinkContainer to='/login'>
                     <Nav.Link>Login</Nav.Link>
                   </LinkContainer>
@@ -30,6 +31,7 @@ function App() {
             </Navbar>
             <Route exact path='/login' component={Login} />
             <Route exact path='/dashboard' component={Dashboard} />
+            <Route exact path='/register' component={Register} />
           </article>
         </main>
       </div>

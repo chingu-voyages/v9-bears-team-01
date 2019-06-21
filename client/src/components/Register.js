@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 const axios = require('axios');
 
-export default class Login extends Component {
+export default class Register extends Component {
   state = {
-    email: 'millifly1@gmail.com',
-    password: '123456',
+    firstName: 'TestFirst',
+    lastName: 'TestLast',
+    email: '',
+    password: '',
     error: false,
     errorMessage: ''
   };
@@ -19,7 +21,7 @@ export default class Login extends Component {
     event.preventDefault();
 
     try {
-      const response = await axios.post('/api/users/login', this.state);
+      const response = await axios.post('/api/users', this.state);
       console.log(response);
       localStorage.setItem('token', response.data.token);
 
@@ -33,10 +35,21 @@ export default class Login extends Component {
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
+          <label>First Name: </label>
+          <input
+            name='firstName'
+            value={this.state.firstName}
+            onChange={this.handleChange}
+          />
+          <label>Last Name: </label>
+          <input
+            name='lastName'
+            value={this.state.lastName}
+            onChange={this.handleChange}
+          />
           <label>Email: </label>
           <input
             name='email'
-            placeholder='Email'
             value={this.state.email}
             onChange={this.handleChange}
           />
