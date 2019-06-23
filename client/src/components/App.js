@@ -4,38 +4,21 @@ import './App.css';
 import { BrowserRouter, Route, Link, Switch } from 'react-router-dom';
 import { Nav, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import axios from 'axios';
 
 import Login from './Login';
 import Dashboard from './Dashboard';
 import Register from './Register';
-import StockContext from '../contexts/StockContext';
-
+import { AppContextProvider } from '../contexts/AppContext';
 class App extends React.Component {
   constructor(...args) {
     super(...args);
 
     this.state = { modalShow: false, stocks: [] };
   }
-  async componentDidMount() {
-    console.log('app state component did mount: ', this.state);
-    const token = localStorage.token;
-    try {
-      if (token) {
-        const response = await axios.get('/api/stocks', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        await this.setState({ stocks: response.data });
-        console.log('app state: ', this.state);
-      }
-    } catch (e) {
-      console.log('app componenet did mount error:', e);
-    }
-  }
 
   render() {
     return (
-      <StockContext.Provider value={this.state.stocks}>
+      <AppContextProvider>
         <BrowserRouter>
           <div>
             <main>
@@ -65,7 +48,7 @@ class App extends React.Component {
             </main>
           </div>
         </BrowserRouter>
-      </StockContext.Provider>
+      </AppContextProvider>
     );
   }
 }

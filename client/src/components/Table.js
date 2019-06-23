@@ -1,20 +1,13 @@
 import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
 
-import StockContext from '../contexts/StockContext';
-
+import { AppContextConsumer } from '../contexts/AppContext';
 class DisplayTable extends Component {
-  //as to be named 'contextType', this is the same as DisplayTable.contextType = StockContext
-  static contextType = StockContext;
   constructor(...args) {
     super(...args);
 
-    this.state = { stocks: this.context };
+    this.state = { modalShow: false, stocks: [] };
   }
-  componentDidMount() {
-    console.log('context in table', this.state);
-  }
-
   render() {
     const headings = [
       'Ticker',
@@ -31,26 +24,34 @@ class DisplayTable extends Component {
       <thead>
         <tr>
           {headings.map(function(item) {
-            return <th>{item}</th>;
+            return <th key={item}>{item}</th>;
           })}
         </tr>
       </thead>
     );
 
     return (
-      <Table striped bordered hover>
-        {theadMarkup}
-        <tr>
-          <td>APPL</td>
-          <td>$193.22</td>
-          <td>34.50%</td>
-          <td>18.25%</td>
-          <td>16.14%</td>
-          <td>01/02/2019</td>
-          <td>19</td>
-          <td>$143.77</td>
-        </tr>
-      </Table>
+      <AppContextConsumer>
+        {({ stocks }) => (
+          <Table striped bordered hover>
+            {theadMarkup}
+            <tbody>
+              {stocks.map(stock => (
+                <tr key={stock.ticker}>
+                  <td>{stock.ticker}</td>
+                  <td>--</td>
+                  <td>--</td>
+                  <td>--</td>
+                  <td>--</td>
+                  <td>{stock.date}</td>
+                  <td>{stock.quantity}</td>
+                  <td>${stock.price}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </AppContextConsumer>
     );
   }
 }
