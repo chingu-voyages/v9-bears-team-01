@@ -9,7 +9,7 @@ module.exports = app => {
 
   router.post('/stocks', auth, async (req, res) => {
     //const stock = new Stock(req.body);
-
+    // console.log('/stocks called');
     const stock = new Stock({
       ...req.body,
       user: req.user._id
