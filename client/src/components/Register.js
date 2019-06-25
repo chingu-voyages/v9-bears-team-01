@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-const axios = require('axios');
+import { Redirect } from 'react-router-dom';
+import axios from 'axios';
+
+import { AppContextConsumer } from '../contexts/AppContext';
 
 export default class Register extends Component {
   state = {
     firstName: 'TestFirst',
     lastName: 'TestLast',
-    email: '',
-    password: '',
+    email: 'test@mail.com',
+    password: '123456',
     error: false,
     errorMessage: ''
   };
@@ -33,39 +36,57 @@ export default class Register extends Component {
 
   render() {
     return (
-      <div>
-        <form onSubmit={this.handleSubmit}>
-          <label>First Name: </label>
-          <input
-            name='firstName'
-            value={this.state.firstName}
-            onChange={this.handleChange}
-          />
-          <label>Last Name: </label>
-          <input
-            name='lastName'
-            value={this.state.lastName}
-            onChange={this.handleChange}
-          />
-          <label>Email: </label>
-          <input
-            name='email'
-            value={this.state.email}
-            onChange={this.handleChange}
-          />
-          <label>Password: </label>
-          <input
-            type='password'
-            name='password'
-            placeholder='Password'
-            value={this.state.password}
-            onChange={this.handleChange}
-          />
-          <br />
-          {this.state.error === true && <p>{this.state.errorMessage}</p>}
-          <input type='submit' value='Submit' />
-        </form>
-      </div>
+      <AppContextConsumer>
+        {({ user, register }) => {
+          if (user) {
+            return <Redirect to='/profile' />;
+          } else {
+            return (
+              <div>
+                <form
+                  onSubmit={e => {
+                    e.preventDefault();
+                    console.log('event:', e);
+                    register(this.state);
+                  }}
+                >
+                  <label>First Name: </label>
+                  <input
+                    name='firstName'
+                    value={this.state.firstName}
+                    onChange={this.handleChange}
+                  />
+                  <label>Last Name: </label>
+                  <input
+                    name='lastName'
+                    value={this.state.lastName}
+                    onChange={this.handleChange}
+                  />
+                  <label>Email: </label>
+                  <input
+                    name='email'
+                    value={this.state.email}
+                    onChange={this.handleChange}
+                  />
+                  <label>Password: </label>
+                  <input
+                    type='password'
+                    name='password'
+                    placeholder='Password'
+                    value={this.state.password}
+                    onChange={this.handleChange}
+                  />
+                  <br />
+                  {this.state.error === true && (
+                    <p>{this.state.errorMessage}</p>
+                  )}
+                  <input type='submit' value='Submit' />
+                </form>
+              </div>
+            );
+          }
+        }}
+      </AppContextConsumer>
     );
   }
 }

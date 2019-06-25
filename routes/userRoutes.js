@@ -11,8 +11,14 @@ const { sendWelcomeEmail, sendCancelEmail } = require('../services/sendGrid');
 module.exports = app => {
   const router = express.Router();
   router.post('/users', async (req, res) => {
-    // const body = _.pick(req.body, ['email', 'password']);
-    var user = new User(req.body);
+    console.log('post /users called, request:', req.body);
+    const body = _.pick(req.body, [
+      'email',
+      'password',
+      'firstName',
+      'lastName'
+    ]);
+    var user = new User(body);
 
     try {
       await user.save();
@@ -20,6 +26,7 @@ module.exports = app => {
       const token = await user.generateAuthToken();
       res.status(201).send({ user, token });
     } catch (e) {
+      console.log(('/post users error:', e));
       res.status(400).send(e);
     }
     // user
@@ -75,6 +82,7 @@ module.exports = app => {
   });
 
   router.post('/users/logout', auth, async (req, res) => {
+    console.log('/users/logout called');
     try {
       req.user.tokens = req.user.tokens.filter(token => {
         return token.token !== req.token;
