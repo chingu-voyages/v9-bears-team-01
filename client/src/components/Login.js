@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button'
+import { Container, Row, Col } from 'react-bootstrap';
+
+
 const axios = require('axios');
 
 export default class Login extends Component {
@@ -31,28 +36,40 @@ export default class Login extends Component {
 
   render() {
     return (
-      <div>
-        <form onSubmit={this.handleSubmit}>
-          <label>Email: </label>
-          <input
-            name='email'
-            placeholder='Email'
-            value={this.state.email}
-            onChange={this.handleChange}
-          />
-          <label>Password: </label>
-          <input
-            type='password'
-            name='password'
-            placeholder='Password'
-            value={this.state.password}
-            onChange={this.handleChange}
-          />
-          <br />
-          {this.state.error === true && <p>{this.state.errorMessage}</p>}
-          <input type='submit' value='Submit' />
-        </form>
-      </div>
+      <Container>
+				<Row className="mt-5 align-items-xs-center justify-content-md-center">
+					<Col md="6">
+						<Form onSubmit={this.handleSubmit}>
+
+							<Form.Group>
+								<Form.Label>Email:</Form.Label>
+								<Form.Control
+								type='text'
+								name='firstName' 
+								placeholder='Email' 
+								value={this.state.email}
+								onChange={this.handleChange}
+								/>
+							</Form.Group>
+
+							<Form.Group>
+								<Form.Label>Password:</Form.Label>
+								<Form.Control
+								type='password'
+								name='password'
+								value={this.state.password}
+								onChange={this.handleChange}
+								/>
+							</Form.Group>
+
+							{this.state.error === true && <p>{this.state.errorMessage}</p>}
+							<Button variant="primary" type="submit">
+								Submit
+							</Button>
+        		</Form>
+					</Col>
+				</Row>
+      </Container>
     );
   }
 }
