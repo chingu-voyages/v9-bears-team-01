@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button'
-const axios = require('axios');
+import { Redirect } from 'react-router-dom';
+import axios from 'axios';
+
+import { AppContextConsumer } from '../contexts/AppContext';
 
 export default class Register extends Component {
 	
   state = {
     firstName: 'TestFirst',
     lastName: 'TestLast',
-    email: '',
-    password: '',
+    email: 'test@mail.com',
+    password: '123456',
     error: false,
 		errorMessage: '',
 		validated: false
@@ -45,60 +46,57 @@ export default class Register extends Component {
 		const { validated } = this.state.validated;
 
     return (
-			<Form
-			 noValidate
-			 validated={validated} 
-			 onSubmit={e => this.handleSubmit(e)}
-			>
-				<Form.Group>
-					<Form.Label>First Name:</Form.Label>
-					<Form.Control
-					 type='text'
-					 placeholder='John'
-					 //value={this.state.firstName}
-					 onChange={this.handleChange}
-					 required
-					 />
-					<Form.Control.Feedback type='invalid'>Please enter first name.</Form.Control.Feedback>
-				</Form.Group>
-				
-				<Form.Group>
-					<Form.Label>Last Name:</Form.Label>
-					<Form.Control
-					 type='text'
-					 placeholder='Doe'
-					 value={this.state.lastName}
-					 onChange={this.handleChange}
-					 required
-					/>
-					<Form.Control.Feedback type='invalid'>Please enter last name.</Form.Control.Feedback>
-				</Form.Group>
-				
-				<Form.Group>
-					<Form.Label>Email:</Form.Label>
-					<Form.Control
-					 type='text'
-					 value={this.state.email}
-					 onChange={this.handleChange}
-					/>
-					<Form.Control.Feedback type='invalid'>Please enter valid email.</Form.Control.Feedback>
-				</Form.Group>
-
-				<Form.Group>
-					<Form.Label>Password:</Form.Label>
-					<Form.Control
-					 type='password'
-					 name='password'
-					 value={this.state.password}
-					 onChange={this.handleChange}
-					/>
-					<Form.Control.Feedback type='invalid'>Please enter password.</Form.Control.Feedback>
-				</Form.Group>
-				{this.state.error === true && <p>{this.state.errorMessage}</p>}
-				<Button variant="primary" type="submit">
-					Submit
-				</Button>
-			</Form>
+      <AppContextConsumer>
+        {({ user, register }) => {
+          if (user) {
+            return <Redirect to='/profile' />;
+          } else {
+            return (
+              <div>
+                <form
+                  onSubmit={e => {
+                    e.preventDefault();
+                    console.log('event:', e);
+                    register(this.state);
+                  }}
+                >
+                  <label>First Name: </label>
+                  <input
+                    name='firstName'
+                    value={this.state.firstName}
+                    onChange={this.handleChange}
+                  />
+                  <label>Last Name: </label>
+                  <input
+                    name='lastName'
+                    value={this.state.lastName}
+                    onChange={this.handleChange}
+                  />
+                  <label>Email: </label>
+                  <input
+                    name='email'
+                    value={this.state.email}
+                    onChange={this.handleChange}
+                  />
+                  <label>Password: </label>
+                  <input
+                    type='password'
+                    name='password'
+                    placeholder='Password'
+                    value={this.state.password}
+                    onChange={this.handleChange}
+                  />
+                  <br />
+                  {this.state.error === true && (
+                    <p>{this.state.errorMessage}</p>
+                  )}
+                  <input type='submit' value='Submit' />
+                </form>
+              </div>
+            );
+          }
+        }}
+      </AppContextConsumer>
     );
   }
 }
