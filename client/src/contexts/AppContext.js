@@ -45,9 +45,9 @@ class AppContextProvider extends Component {
         const response = await axios.get('/api/stocks', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        console.log('response data:', response.data);
+        // console.log('response data:', response.data);
         await this.setState({ stocks: response.data });
-        console.log('app state: ', this.state);
+        // console.log('app state: ', this.state);
       }
     } catch (e) {
       console.log('app componenet did mount error:', e);
@@ -87,7 +87,7 @@ class AppContextProvider extends Component {
   async componentDidMount() {
     await this.checkUser();
     await this.getStocks();
-    console.log('app state component did mount: ', this.state);
+    // console.log('app state component did mount: ', this.state);
   }
 
   render() {

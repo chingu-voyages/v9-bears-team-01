@@ -5,29 +5,23 @@ import axios from 'axios';
 import { AppContextConsumer } from '../contexts/AppContext';
 import { resolve } from 'path';
 class DisplayTable extends Component {
-  state = { 
-    modalShow: false, 
+  state = {
+    modalShow: false,
     stocks: []
-  }
-  
-  getCurrentPrice = async(ticker) => {
-    // const url = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=' + ticker + '&apikey=1L6GZW4SFVR1BCVB';
-    //Update current price
-    // let res = await axios.get(url)
-    // let price = res.data["Global Quote"]["05. price"];
-    // console.log(price);
-      // if (price) {
-      // 	console.log('passed')
-    // console.log(typeof(price));
-    // return price;
-      // 	console.log('test');
-      // 	console.log(this.state.currentPrice);
-      // }
-      // resolve(response);
-    // })
-    //Returns value of current price
-    //return this.state.currentPrice
-  }
+  };
+
+  updateStock = async stock => {
+    const res = await axios.get(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=
+      ${stock.ticker}&apikey=1L6GZW4SFVR1BCVB`);
+
+    const currentPrice = res.data['Global Quote']['05. price'];
+    let stockReturn = null;
+
+    if (currentPrice) {
+      stockReturn = (currentPrice - stock.price) / stock.price;
+    }
+    return { ...stock, currentPrice, return: stockReturn };
+  };
 
   getReturn(currentPrice, buyPrice) {
     if (!currentPrice || !buyPrice) {
@@ -37,6 +31,29 @@ class DisplayTable extends Component {
     returnPer = (returnPer - 1) * 100;
     return returnPer;
   }
+
+  componentDidMount = async function() {
+    // await this.setState({ stocks: this.props.stocks });
+    // const newStocks = await this.state.stocks(stock => ({
+    //   ...stock,
+    //   currentPrice: 'currentPrice'
+    // }));
+    // console.log({ newStocks });
+    // await this.setState({ stocks: this.props.stocks });
+
+    console.log('props: ', this.props);
+    await this.setState({ stocks: this.props.stocks });
+    const newStocks = await Promise.all(
+      this.state.stocks.map(stock => this.updateStock(stock))
+    );
+    console.log('new stocks', newStocks);
+    // const newStocks = this.state.stocks.map( stock => async ({
+    //   ...stock,
+    //   currentPrice: await this.getCurrentPrice(stock.ticker)
+    // }));
+    await this.setState({ stocks: newStocks });
+    console.log('state after cdm:', this.state);
+  };
 
   render() {
     const headings = [
@@ -59,33 +76,36 @@ class DisplayTable extends Component {
         </tr>
       </thead>
     );
-
+    // const stocks = this.props.stocks;
+    // console.log({ stocks });
     return (
-      <AppContextConsumer>
-        {({ stocks }) => (
-          <Table striped bordered hover>
-            {theadMarkup}
-            <tbody>
-              {stocks.map(stock => (
-                <tr key={stock.ticker}>
-                  <td>{stock.ticker}</td>
-                  <td>
-                    {/* {this.getCurrentPrice(stock.ticker)} */}
-                  </td>
-                  <td>--</td>
-                  {/* <td>{this.getReturn(this.state.currentPrice, stock.price)}</td> */}
-                  <td>--</td>
-                  <td>{stock.date}</td>
-                  <td>{stock.quantity}</td>
-                  <td>${stock.price}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
-      </AppContextConsumer>
+      <Table striped bordered hover>
+        {theadMarkup}
+        <tbody>
+          {this.state.stocks.map(stock => (
+            <tr key={stock.ticker}>
+              <td>{stock.ticker}</td>
+              <td>{stock.currentPrice}</td>
+              <td>--</td>
+              <td>{stock.return}</td>
+              <td>--</td>
+              <td>{stock.date}</td>
+              <td>{stock.quantity}</td>
+              <td>${stock.price}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     );
   }
 }
 
-export default DisplayTable;
+// export default DisplayTable;
+export default React.forwardRef((props, ref) => (
+  <AppContextConsumer>
+    {function({ stocks }) {
+      // console.log({ stuff });
+      return <DisplayTable {...props} stocks={stocks} ref={ref} />;
+    }}
+  </AppContextConsumer>
+));
