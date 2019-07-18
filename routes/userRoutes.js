@@ -10,6 +10,7 @@ const { sendWelcomeEmail, sendCancelEmail } = require('../services/sendGrid');
 
 module.exports = app => {
   const router = express.Router();
+
   router.post('/users', async (req, res) => {
     console.log('post /users called, request:', req.body);
     const body = _.pick(req.body, [
