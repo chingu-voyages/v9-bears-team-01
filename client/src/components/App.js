@@ -9,6 +9,7 @@ import Login from './Login';
 import Dashboard from './Dashboard';
 import Register from './Register';
 import Profile from './Profile';
+import NavBar from './NavBar';
 import { AppContextProvider, AppContextConsumer } from '../contexts/AppContext';
 class App extends React.Component {
   constructor(...args) {
@@ -52,27 +53,21 @@ class App extends React.Component {
   render() {
     return (
       <AppContextProvider>
-        <AppContextConsumer>
-          {values => {
-            return (
-              <BrowserRouter>
-                <div>
-                  <main>
-                    <article>
-                      {this.getNavbar(values)}
-                      <Switch>
-                        <Route exact path='/login' component={Login} />
-                        <Route exact path='/profile' component={Profile} />
-                        <Route exact path='/dashboard' component={Dashboard} />
-                        <Route exact path='/register' component={Register} />
-                      </Switch>
-                    </article>
-                  </main>
-                </div>
-              </BrowserRouter>
-            );
-          }}
-        </AppContextConsumer>
+        <BrowserRouter>
+          <div>
+            <main>
+              <article>
+                <NavBar />
+                <Switch>
+                  <Route exact path='/login' component={Login} />
+                  <Route exact path='/profile' component={Profile} />
+                  <Route exact path='/dashboard' component={Dashboard} />
+                  <Route exact path='/register' component={Register} />
+                </Switch>
+              </article>
+            </main>
+          </div>
+        </BrowserRouter>
       </AppContextProvider>
     );
   }

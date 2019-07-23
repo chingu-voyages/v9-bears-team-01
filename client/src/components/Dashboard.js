@@ -11,21 +11,23 @@ export default class Dashboard extends Component {
     super(...args);
 
     this.state = { modalShow: false, stocks: [] };
-	}
-	
-	//Check if user is login
-	userLogin() {
-		if (!localStorage.token) {
-			return <Redirect to={{pathname: '/login', state: this.props.location}} />
-		}
-	}
+  }
+
+  //Check if user is login
+  userLogin() {
+    if (!localStorage.token) {
+      return (
+        <Redirect to={{ pathname: '/login', state: this.props.location }} />
+      );
+    }
+  }
 
   render() {
-		let modalClose = () => this.setState({ modalShow: false });
+    let modalClose = () => this.setState({ modalShow: false });
 
     return (
       <Container className='mt-3'>
-				{this.userLogin()}
+        {this.userLogin()}
         <Row>
           <Button
             variant='primary'
@@ -34,7 +36,7 @@ export default class Dashboard extends Component {
             Add Transaction
           </Button>
         </Row>
-        <AddBuyForm show={this.state.modalShow} onHide={modalClose} />
+        <AddBuyForm show={this.state.modalShow} hide={modalClose} />
         <br />
         <Row>
           <Table />

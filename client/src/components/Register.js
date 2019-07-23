@@ -22,13 +22,13 @@ export default class Register extends Component {
     console.log(form.elements);
 
     const user = {
-      firstName: form.elements.firstName.value,
-      lastName: form.elements.lastName.value,
-      email: form.elements.email.value,
-      password: form.elements.password.value
+      firstName: form.elements.firstName,
+      lastName: form.elements.lastName,
+      email: form.elements.email,
+      password: form.elements.password
     };
     try {
-      console.log('trying to post:', user);
+      console.log('trying to post');
       const response = await axios.post('/api/users', user);
       console.log('here is my response:', response);
       localStorage.setItem('token', response.data.token);

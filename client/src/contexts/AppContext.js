@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-const AppContext = React.createContext();
 
+import { withRouter } from 'react-router-dom';
+const AppContext = React.createContext();
 class AppContextProvider extends Component {
   constructor(...args) {
     super(...args);
@@ -37,8 +38,20 @@ class AppContextProvider extends Component {
     }
   };
 
+  updateStock = async stock => {
+    const res = await axios.get(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=
+      ${stock.ticker}&apikey=1L6GZW4SFVR1BCVB`);
+
+    let stockReturn = null;
+    let currentPrice = null;
+    if (res.data) {
+      currentPrice = res.data['Global Quote']['05. price'];
+      stockReturn = (currentPrice - stock.price) / stock.price;
+    }
+    return { ...stock, currentPrice, return: stockReturn };
+  };
+
   getStocks = async () => {
-    console.log('in getStocks, state:', this.state);
     const token = localStorage.token;
     try {
       if (this.state.user !== null) {
@@ -46,8 +59,23 @@ class AppContextProvider extends Component {
           headers: { Authorization: `Bearer ${token}` }
         });
         // console.log('response data:', response.data);
-        await this.setState({ stocks: response.data });
-        // console.log('app state: ', this.state);
+
+        const newStocks = await Promise.all(
+          response.data.map(stock => this.updateStock(stock))
+        );
+        console.log('new stocks', newStocks);
+        // const newStocks = this.state.stocks.map( stock => async ({
+        //   ...stock,
+        //   currentPrice: await this.getCurrentPrice(stock.ticker)
+        // }));
+        await this.setState({ stocks: newStocks });
+
+        // await this.setState(prevState => ({
+        //   ...prevState,
+        //   stocks: response.data
+        // }));
+        // await this.setState({ stocks: response.data });
+        console.log('app state: ', this.state);
       }
     } catch (e) {
       console.log('app componenet did mount error:', e);
@@ -75,9 +103,8 @@ class AppContextProvider extends Component {
         const response = await axios.get('/api/users/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        console.log('check user response data:', response.data);
+        // console.log('check user response data:', response.data);
         await this.setState({ user: response.data });
-        console.log('app state: ', this.state);
       }
     } catch (e) {
       console.log('app componenet did mount error:', e);
@@ -87,16 +114,16 @@ class AppContextProvider extends Component {
   async componentDidMount() {
     await this.checkUser();
     await this.getStocks();
-    // console.log('app state component did mount: ', this.state);
+    console.log('app state component did mount: ', this.state);
   }
 
   render() {
     return (
-      <AppContext.Provider value={{ ...this.state }}>
+      <AppContext.Provider value={{ ...this.state, getStocks: this.getStocks }}>
         {this.props.children}
       </AppContext.Provider>
     );
   }
 }
-const AppContextConsumer = AppContext.Consumer;
-export { AppContextProvider, AppContextConsumer };
+const AppContextConsumer = withRouter(AppContext.Consumer);
+export { AppContextProvider, AppContextConsumer, AppContext };
